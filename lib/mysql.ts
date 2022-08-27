@@ -1,6 +1,6 @@
 import { FFIType } from "bun:ffi";
 
-export const mysqlSymboles = {
+export default {
   "mysql_server_init": {
     "returns": FFIType.ptr,
     "args": [

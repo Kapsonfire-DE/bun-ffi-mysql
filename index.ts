@@ -1,8 +1,17 @@
 import {CString, dlopen, FFIType,} from "bun:ffi";
-import {mysqlSymboles} from "./lib/mysql";
+import _mysqlSymboles from "./lib/mysql";
 
 const path = './lib/libmysqlclient.so.21.2.30';
 const NULL = 0;
+
+const onlyImportFunctions = [
+    "mysql_real_connect",
+    "mysql_error",
+    "mysql_init"
+];
+let mysqlSymboles = {};
+onlyImportFunctions.forEach(funcName => mysqlSymboles[funcName] = _mysqlSymboles[funcName]);
+
 const lib = dlopen(path, mysqlSymboles);
 
 let mysqlObj = lib.symbols.mysql_init(NULL);

@@ -72,4 +72,4 @@ jsonTPL = jsonTPL.replace(regexUnwrap, '$1');
 
 console.log(`import { FFIType } from "bun:ffi";
 
-export const mysqlSymboles = ${jsonTPL}`);
+export default ${jsonTPL}`);
