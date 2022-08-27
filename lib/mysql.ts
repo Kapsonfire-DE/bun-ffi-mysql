@@ -2,7 +2,7 @@ import { FFIType } from "bun:ffi";
 
 export default {
   "mysql_server_init": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.i32,
       FFIType.ptr,
@@ -14,7 +14,7 @@ export default {
     "args": []
   },
   "mysql_thread_init": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": []
   },
   "mysql_thread_end": {
@@ -22,19 +22,19 @@ export default {
     "args": []
   },
   "mysql_num_rows": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_num_fields": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_eof": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
@@ -71,25 +71,25 @@ export default {
     ]
   },
   "mysql_field_count": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_affected_rows": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_insert_id": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_errno": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u32,
     "args": [
       FFIType.ptr
     ]
@@ -107,7 +107,7 @@ export default {
     ]
   },
   "mysql_warning_count": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u32,
     "args": [
       FFIType.ptr
     ]
@@ -119,7 +119,7 @@ export default {
     ]
   },
   "mysql_thread_id": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u64,
     "args": [
       FFIType.ptr
     ]
@@ -131,7 +131,7 @@ export default {
     ]
   },
   "mysql_set_character_set": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.cstring
@@ -144,7 +144,7 @@ export default {
     ]
   },
   "mysql_ssl_set": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -161,7 +161,7 @@ export default {
     ]
   },
   "mysql_get_ssl_session_reused": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
@@ -175,14 +175,14 @@ export default {
     ]
   },
   "mysql_free_ssl_session_data": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_change_user": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -204,21 +204,21 @@ export default {
     ]
   },
   "mysql_select_db": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.cstring
     ]
   },
   "mysql_query": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.cstring
     ]
   },
   "mysql_send_query": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -226,7 +226,7 @@ export default {
     ]
   },
   "mysql_real_query": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -303,7 +303,7 @@ export default {
     ]
   },
   "mysql_session_track_get_first": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -312,7 +312,7 @@ export default {
     ]
   },
   "mysql_session_track_get_next": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -344,41 +344,41 @@ export default {
     ]
   },
   "mysql_shutdown": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_dump_debug_info": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_refresh": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.u32
     ]
   },
   "mysql_kill": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.u64
     ]
   },
   "mysql_set_server_option": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_ping": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
@@ -400,7 +400,7 @@ export default {
     "args": []
   },
   "mysql_get_client_version": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u64,
     "args": []
   },
   "mysql_get_host_info": {
@@ -410,13 +410,13 @@ export default {
     ]
   },
   "mysql_get_server_version": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u64,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_get_proto_info": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u32,
     "args": [
       FFIType.ptr
     ]
@@ -442,7 +442,7 @@ export default {
     ]
   },
   "mysql_options": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -450,7 +450,7 @@ export default {
     ]
   },
   "mysql_options4": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -459,7 +459,7 @@ export default {
     ]
   },
   "mysql_get_option": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -533,7 +533,7 @@ export default {
     ]
   },
   "mysql_escape_string": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u64,
     "args": [
       FFIType.cstring,
       FFIType.cstring,
@@ -541,7 +541,7 @@ export default {
     ]
   },
   "mysql_hex_string": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u64,
     "args": [
       FFIType.cstring,
       FFIType.cstring,
@@ -549,7 +549,7 @@ export default {
     ]
   },
   "mysql_real_escape_string": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u64,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -558,7 +558,7 @@ export default {
     ]
   },
   "mysql_real_escape_string_quote": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u64,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -581,30 +581,30 @@ export default {
     ]
   },
   "mysql_thread_safe": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u32,
     "args": []
   },
   "mysql_read_query_result": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_reset_connection": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_binlog_open": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_binlog_fetch": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr
@@ -618,7 +618,7 @@ export default {
     ]
   },
   "mysql_bind_param": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.u32,
@@ -633,7 +633,7 @@ export default {
     ]
   },
   "mysql_stmt_prepare": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -641,19 +641,19 @@ export default {
     ]
   },
   "mysql_stmt_execute": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_fetch": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_fetch_column": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -662,19 +662,19 @@ export default {
     ]
   },
   "mysql_stmt_store_result": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_param_count": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u64,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_attr_set": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -682,7 +682,7 @@ export default {
     ]
   },
   "mysql_stmt_attr_get": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -690,39 +690,39 @@ export default {
     ]
   },
   "mysql_stmt_bind_param": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_stmt_bind_result": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_stmt_close": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_reset": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_free_result": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_send_long_data": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.u32,
@@ -743,7 +743,7 @@ export default {
     ]
   },
   "mysql_stmt_errno": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u32,
     "args": [
       FFIType.ptr
     ]
@@ -781,62 +781,62 @@ export default {
     ]
   },
   "mysql_stmt_num_rows": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_affected_rows": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_insert_id": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_field_count": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.u32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_commit": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_rollback": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_autocommit": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr,
       FFIType.i32
     ]
   },
   "mysql_more_results": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_next_result": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_next_result": {
-    "returns": FFIType.ptr,
+    "returns": FFIType.i32,
     "args": [
       FFIType.ptr
     ]

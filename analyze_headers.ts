@@ -50,6 +50,7 @@ json.inner.forEach(defC => {
 
 
     let [returnType, args] = m;
+    returnType = returnType.trim();
     args = args.split(',').map(a => a.trim()).filter(str => str != 'void').map(typeStr => {
         return FFITypeMatcher[typeStr] ?? 'FFIType.ptr';
     });
