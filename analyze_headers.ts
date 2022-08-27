@@ -1,25 +1,22 @@
-import * as fs from "fs";
+import {exec} from 'bun-utilities/spawn'
 
 
-
-if(process.argv.length < 3) {
+if (process.argv.length < 3) {
     console.error('no input file');
     process.exit(0);
 }
 
-const str = fs.readFileSync(process.argv[2], {
-    encoding: "utf-8"
-})
 
-const regex = /^([a-zA-Z \_]*) ([\*])?STDCALL (\w+)\((.*?)\)/gms;
+let ast = exec(['clang', '-cc1', '-ast-dump=json', process.argv[process.argv.length - 1]]);
+let json = JSON.parse(ast.stdout);
 
 
 let m;
 let ffiLoadObj = {};
 
 const FFITypeMatcher = {
-    "char*": 'FFIType.cstring',
-    "const char*": 'FFIType.cstring',
+    "char *": 'FFIType.cstring',
+    "const char *": 'FFIType.cstring',
     "void*": 'FFIType.ptr',
     "byte": "FFIType.i8",
     "word": "FFIType.i16",
@@ -35,43 +32,39 @@ const FFITypeMatcher = {
     "char": "FFIType.char",
 
 
-
 }
 
-while ((m = regex.exec(str)) !== null) {
-    // This is necessary to avoid infinite loops with zero-width matches
-    if (m.index === regex.lastIndex) {
-        regex.lastIndex++;
-    }
-
-    if(m[3].includes('nonblocking')) continue;
-    if(!m[3].startsWith('mysql_')) continue;
-    if(m[3].startsWith('mysql_binlog')) continue;
-
-    let returnType = m[1] + (m[2]??'');
+json.inner.forEach(defC => {
+    if (defC.kind !== 'FunctionDecl') return;
 
 
-    let args = m[4].split(',').map(str => str.trim()).filter(str => str != 'void').map(typeStr => {
-        let parts = typeStr.split(' ');
-
-        let isPtr = (parts[parts.length - 1]).startsWith('*');
-        parts.pop();
-        typeStr = parts.join(' ') + (isPtr?'*':'');
+    let signature = defC.type.qualType;
+    let funcName = defC.name;
 
 
+    let splitInd = signature.indexOf('(');
+    m = [
+        signature.substring(0, splitInd),
+        signature.substring(splitInd + 1, signature.length - 1)
+    ];
 
+
+    let [returnType, args] = m;
+    args = args.split(',').map(a => a.trim()).filter(str => str != 'void').map(typeStr => {
         return FFITypeMatcher[typeStr] ?? 'FFIType.ptr';
     });
 
-
-
-
-    ffiLoadObj[m[3]] = {
+    ffiLoadObj[funcName] = {
         returns: FFITypeMatcher[returnType] ?? 'FFIType.ptr',
         args
     };
 
-}
+
+
+
+
+})
+
 
 let jsonTPL = JSON.stringify(ffiLoadObj, null, 2);
 const regexUnwrap = /"(FFIType\..*?)"/gms;

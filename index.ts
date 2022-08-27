@@ -1,7 +1,6 @@
 import {CString, dlopen, FFIType,} from "bun:ffi";
 import {mysqlSymboles} from "./lib/mysql";
-mysqlSymboles.mysql_init.args[0] = FFIType.u64 as any;
-mysqlSymboles.mysql_error.returns = FFIType.cstring as any;
+
 const path = './lib/libmysqlclient.so.21.2.30';
 const NULL = 0;
 const lib = dlopen(path, mysqlSymboles);

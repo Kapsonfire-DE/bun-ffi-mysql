@@ -2,11 +2,11 @@ import { FFIType } from "bun:ffi";
 
 export const mysqlSymboles = {
   "mysql_server_init": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.i32,
-      FFIType.cstring,
-      FFIType.cstring
+      FFIType.ptr,
+      FFIType.ptr
     ]
   },
   "mysql_server_end": {
@@ -14,21 +14,27 @@ export const mysqlSymboles = {
     "args": []
   },
   "mysql_thread_init": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": []
   },
   "mysql_thread_end": {
     "returns": FFIType.ptr,
     "args": []
   },
+  "mysql_num_rows": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr
+    ]
+  },
   "mysql_num_fields": {
-    "returns": FFIType.u32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_eof": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
@@ -65,13 +71,25 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_field_count": {
-    "returns": FFIType.u32,
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr
+    ]
+  },
+  "mysql_affected_rows": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr
+    ]
+  },
+  "mysql_insert_id": {
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_errno": {
-    "returns": FFIType.u32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
@@ -89,7 +107,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_warning_count": {
-    "returns": FFIType.u32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
@@ -101,7 +119,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_thread_id": {
-    "returns": FFIType.u64,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
@@ -113,7 +131,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_set_character_set": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.cstring
@@ -126,7 +144,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_ssl_set": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -143,7 +161,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_get_ssl_session_reused": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
@@ -157,14 +175,14 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_free_ssl_session_data": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_change_user": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -186,21 +204,21 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_select_db": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.cstring
     ]
   },
   "mysql_query": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.cstring
     ]
   },
   "mysql_send_query": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -208,7 +226,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_real_query": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -227,6 +245,56 @@ export const mysqlSymboles = {
       FFIType.ptr
     ]
   },
+  "mysql_real_connect_nonblocking": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr,
+      FFIType.cstring,
+      FFIType.cstring,
+      FFIType.cstring,
+      FFIType.cstring,
+      FFIType.u32,
+      FFIType.cstring,
+      FFIType.u64
+    ]
+  },
+  "mysql_send_query_nonblocking": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr,
+      FFIType.cstring,
+      FFIType.u64
+    ]
+  },
+  "mysql_real_query_nonblocking": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr,
+      FFIType.cstring,
+      FFIType.u64
+    ]
+  },
+  "mysql_store_result_nonblocking": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr,
+      FFIType.ptr
+    ]
+  },
+  "mysql_next_result_nonblocking": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr
+    ]
+  },
+  "mysql_select_db_nonblocking": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr,
+      FFIType.cstring,
+      FFIType.ptr
+    ]
+  },
   "mysql_get_character_set_info": {
     "returns": FFIType.ptr,
     "args": [
@@ -235,59 +303,82 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_session_track_get_first": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
-      FFIType.cstring,
+      FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_session_track_get_next": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr,
+      FFIType.ptr,
+      FFIType.ptr,
+      FFIType.ptr
+    ]
+  },
+  "mysql_set_local_infile_handler": {
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
       FFIType.cstring,
+      FFIType.ptr,
+      FFIType.ptr,
+      FFIType.cstring,
+      FFIType.ptr,
+      FFIType.ptr,
+      FFIType.ptr,
+      FFIType.cstring,
+      FFIType.ptr,
+      FFIType.ptr
+    ]
+  },
+  "mysql_set_local_infile_default": {
+    "returns": FFIType.ptr,
+    "args": [
       FFIType.ptr
     ]
   },
   "mysql_shutdown": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_dump_debug_info": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_refresh": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.u32
     ]
   },
   "mysql_kill": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.u64
     ]
   },
   "mysql_set_server_option": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_ping": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
@@ -309,7 +400,7 @@ export const mysqlSymboles = {
     "args": []
   },
   "mysql_get_client_version": {
-    "returns": FFIType.u64,
+    "returns": FFIType.ptr,
     "args": []
   },
   "mysql_get_host_info": {
@@ -319,13 +410,13 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_get_server_version": {
-    "returns": FFIType.u64,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_get_proto_info": {
-    "returns": FFIType.u32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
@@ -351,7 +442,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_options": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -359,7 +450,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_options4": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -368,7 +459,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_get_option": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -381,11 +472,17 @@ export const mysqlSymboles = {
       FFIType.ptr
     ]
   },
+  "mysql_free_result_nonblocking": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr
+    ]
+  },
   "mysql_data_seek": {
     "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
-      FFIType.ptr
+      FFIType.i32
     ]
   },
   "mysql_row_seek": {
@@ -405,6 +502,13 @@ export const mysqlSymboles = {
   "mysql_fetch_row": {
     "returns": FFIType.ptr,
     "args": [
+      FFIType.ptr
+    ]
+  },
+  "mysql_fetch_row_nonblocking": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr,
       FFIType.ptr
     ]
   },
@@ -429,7 +533,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_escape_string": {
-    "returns": FFIType.u64,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.cstring,
       FFIType.cstring,
@@ -437,7 +541,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_hex_string": {
-    "returns": FFIType.u64,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.cstring,
       FFIType.cstring,
@@ -445,7 +549,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_real_escape_string": {
-    "returns": FFIType.u64,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -454,7 +558,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_real_escape_string_quote": {
-    "returns": FFIType.u64,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -469,29 +573,57 @@ export const mysqlSymboles = {
       FFIType.cstring
     ]
   },
+  "myodbc_remove_escape": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr,
+      FFIType.cstring
+    ]
+  },
   "mysql_thread_safe": {
-    "returns": FFIType.u32,
+    "returns": FFIType.ptr,
     "args": []
   },
   "mysql_read_query_result": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_reset_connection": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
-  "mysql_bind_param": {
-    "returns": FFIType.bool,
+  "mysql_binlog_open": {
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
+      FFIType.ptr
+    ]
+  },
+  "mysql_binlog_fetch": {
+    "returns": FFIType.ptr,
+    "args": [
       FFIType.ptr,
+      FFIType.ptr
+    ]
+  },
+  "mysql_binlog_close": {
+    "returns": FFIType.ptr,
+    "args": [
       FFIType.ptr,
-      FFIType.cstring
+      FFIType.ptr
+    ]
+  },
+  "mysql_bind_param": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr,
+      FFIType.u32,
+      FFIType.ptr,
+      FFIType.ptr
     ]
   },
   "mysql_stmt_init": {
@@ -501,7 +633,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_stmt_prepare": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.cstring,
@@ -509,19 +641,19 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_stmt_execute": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_fetch": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_fetch_column": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -530,19 +662,19 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_stmt_store_result": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_param_count": {
-    "returns": FFIType.u64,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_attr_set": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -550,7 +682,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_stmt_attr_get": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr,
@@ -558,39 +690,39 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_stmt_bind_param": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_stmt_bind_result": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.ptr
     ]
   },
   "mysql_stmt_close": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_reset": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_free_result": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_send_long_data": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
       FFIType.u32,
@@ -611,7 +743,7 @@ export const mysqlSymboles = {
     ]
   },
   "mysql_stmt_errno": {
-    "returns": FFIType.u32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
@@ -645,48 +777,66 @@ export const mysqlSymboles = {
     "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
+      FFIType.i32
+    ]
+  },
+  "mysql_stmt_num_rows": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr
+    ]
+  },
+  "mysql_stmt_affected_rows": {
+    "returns": FFIType.ptr,
+    "args": [
+      FFIType.ptr
+    ]
+  },
+  "mysql_stmt_insert_id": {
+    "returns": FFIType.ptr,
+    "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_field_count": {
-    "returns": FFIType.u32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_commit": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_rollback": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_autocommit": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr,
-      FFIType.bool
+      FFIType.i32
     ]
   },
   "mysql_more_results": {
-    "returns": FFIType.bool,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_next_result": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
   },
   "mysql_stmt_next_result": {
-    "returns": FFIType.i32,
+    "returns": FFIType.ptr,
     "args": [
       FFIType.ptr
     ]
