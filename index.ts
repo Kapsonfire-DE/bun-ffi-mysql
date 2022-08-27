@@ -11,7 +11,7 @@ const onlyImportFunctions = [
 ];
 let mysqlSymboles = {};
 onlyImportFunctions.forEach(funcName => mysqlSymboles[funcName] = _mysqlSymboles[funcName]);
-
+mysqlSymboles.mysql_init.args[0] = FFIType.u64;
 const lib = dlopen(path, mysqlSymboles);
 
 let mysqlObj = lib.symbols.mysql_init(NULL);
