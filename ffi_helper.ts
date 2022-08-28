@@ -46,9 +46,11 @@ export function ptrToStruct(ptr: number, fields: { name: string, type: FFIType }
         } else if (field.type === FFIType.u16) {
             obj[field.name] = buff.getUint16(ind, true);
         } else if (field.type === FFIType.u64) {
-            obj[field.name] = buff.getBigUint64(ind, true)
+            let v = buff.getBigUint64(ind, true);
+            obj[field.name] = (v <= BigInt(Number.MAX_SAFE_INTEGER) && v >= BigInt(Number.MIN_SAFE_INTEGER)) ? Number(v) : v;
         } else if (field.type === FFIType.i64) {
-            obj[field.name] = buff.getBigInt64(ind, true)
+            let v = buff.getBigInt64(ind, true);
+            obj[field.name] = (v <= BigInt(Number.MAX_SAFE_INTEGER) && v >= BigInt(Number.MIN_SAFE_INTEGER)) ? Number(v) : v;
         } else if (field.type === FFIType.i32) {
             obj[field.name] = buff.getInt32(ind, true)
         } else if (field.type === FFIType.u32) {
