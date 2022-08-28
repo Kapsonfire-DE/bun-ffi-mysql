@@ -84,6 +84,7 @@ export class MysqlResult {
                 {name: 'flags', type: FFIType.u32},
                 {name: 'decimals', type: FFIType.u32},
                 {name: 'charsetnr', type: FFIType.u32},
+                {name: 'type', type: FFIType.u32},
             ]) as FieldInfo;
             this._fields.push(obj);
         }
