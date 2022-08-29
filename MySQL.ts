@@ -14,32 +14,35 @@ import {
     mysql_store_result,
     MysqlFieldObject,
     MySQLObject,
-    MySQLResultObject,
-    MysqlRowObject
+    MySQLResultObject
 } from "./mysqlFFI";
-import {CString, FFIType, toArrayBuffer,} from "bun:ffi";
+import {FFIType,} from "bun:ffi";
 import {ptrToStruct} from "./ffi_helper";
-
-function toRowObject(row: MysqlRowObject, fields: FieldInfo[]) {
-
-
-}
-
-
+import {MySQLTypes, MysqlTypesDates, MysqlTypesNumeric} from "./MySQLTypes";
 
 
 type FieldInfo = {
     name: string,
+    type: MySQLTypes
 }
 
 
 export class MysqlResult {
-    public readonly mysqlResult: MySQLResultObject;
-    public readonly mysqlObject: MySQLObject;
+    get typeSafety(): boolean {
+        return this._typeSafety;
+    }
 
-    constructor(mysqlResult: MySQLResultObject, mysqlObject: MySQLObject) {
+    set typeSafety(value: boolean) {
+        this._typeSafety = value;
+    }
+    private _typeSafety: boolean = true;
+    public readonly mysqlResult: MySQLResultObject;
+    public readonly mysql: MySQL;
+
+    constructor(mysqlResult: MySQLResultObject, mysql: MySQL) {
         this.mysqlResult = mysqlResult;
-        this.mysqlObject = mysqlObject;
+        this.mysql = mysql;
+        this._typeSafety = mysql.typeSafety;
     }
 
     get fieldCount(): number {
@@ -51,9 +54,31 @@ export class MysqlResult {
         return mysql_num_rows(this.mysqlResult);
     }
 
-    fetchRow() {
+    fetchRow() : null|object {
         let row = mysql_fetch_row(this.mysqlResult);
-        toRowObject(row, this.fields);
+        if(row === null) {
+            return null;
+        }
+        let rowObj = ptrToStruct(row, this.fields.map(f => {
+            return {
+                name: f.name,
+                type: FFIType.cstring
+            }
+        }));
+
+        if(this._typeSafety) {
+            this.fields.map(field => {
+                if (MysqlTypesNumeric.includes(field.type)) {
+                    rowObj[field.name] = Number(rowObj[field.name])
+                } else if (MysqlTypesDates.includes(field.type) ) {
+                    rowObj[field.name] = new Date(rowObj[field.name]);
+                } else {
+                    //console.log('unhandled type: ' + field.type);
+                }
+            });
+        }
+
+        return rowObj;
     }
 
     private _fields: FieldInfo[] = [];
@@ -91,13 +116,31 @@ export class MysqlResult {
 
         return this._fields;
     }
+
+    fetchAllRows() : object[] {
+        let data = new Array(this.rowCount)
+        for(let i = 0; i < data.length; i++) {
+            let rowdata = this.fetchRow();
+            if(rowdata === null) break;
+            data[i] = rowdata;
+        }
+        return data;
+    }
 }
 
 export class MySQL {
+    get typeSafety(): boolean {
+        return this._typeSafety;
+    }
+
+    set typeSafety(value: boolean) {
+        this._typeSafety = value;
+    }
     static readonly DEFAULT_UDS: string = '/var/run/mysqld/mysqld.sock';
     static readonly DEFAULT_PORT: number = 3306;
     public readonly mysqlObj: MySQLObject;
 
+    private _typeSafety: boolean = true;
 
     private _hasResult: boolean = false;
 
@@ -125,13 +168,16 @@ export class MySQL {
 
 
     query(query: string): MysqlResult | null {
+
         this._freeResult();
         mysql_query(this.mysqlObj, query);
         let resObj = mysql_store_result(this.mysqlObj);
-        if (resObj !== 0) {
+
+        if (resObj !== 0 && this.errorCode === 0) {
             this._currentRes = resObj;
-            return new MysqlResult(resObj, this.mysqlObj);
+            return new MysqlResult(resObj, this);
         }
+
         return null;
     }
 
@@ -183,7 +229,7 @@ export class MySQL {
             port = parseInt(match[1], 10);
             host = host.substring(0, host.length - (port + '').length - 1);
         }
-        console.error(host, port)
+
 
         mysql_real_connect(
             this.mysqlObj,
