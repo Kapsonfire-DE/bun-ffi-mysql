@@ -5,6 +5,7 @@
   "type": "module",
   "devDependencies": {
     "bun-types": "^0.1.0",
-    "bun-utilities": "^0.2.1"
+    "bun-utilities": "^0.2.1",
+    "mitata": "^0.1.6"
   }
 }

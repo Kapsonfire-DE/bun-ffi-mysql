@@ -1,5 +1,6 @@
 import {CString, dlopen, FFIFunction, FFIType, suffix} from "bun:ffi";
 import _mysqlSymboles from "./lib/mysql";
+import {MysqlResult} from "./MySQL";
 
 
 const path = `./lib/libmysqlclient-${process.arch}.${suffix}`;
@@ -23,6 +24,10 @@ let mysqlSymboles: { [key: string]: FFIFunction } = {
     mysql_fetch_row: {},
     mysql_fetch_field: {},
     mysql_row_seek: {},
+    mysql_stmt_init: {},
+    mysql_stmt_prepare: {},
+    mysql_stmt_execute: {},
+    mysql_stmt_param_count: {}
 
 };
 Object.keys(mysqlSymboles).forEach(funcName => mysqlSymboles[funcName] = _mysqlSymboles[funcName]);
@@ -39,6 +44,7 @@ export type MySQLObject = Number;
 export type MySQLResultObject = Number;
 export type MysqlRowObject = Number;
 export type MysqlFieldObject = Number;
+export type MysqlStatementObject = Number;
 
 
 const mysql_real_connect = function (mysqlObj: MySQLObject, host: string, user: string, password: string | null, database: string, port: number, uds: null | string, clientflags: number): void {
@@ -50,7 +56,7 @@ const mysql_real_connect = function (mysqlObj: MySQLObject, host: string, user: 
         cString(database),
         port,
         cString(uds),
-        clientflags
+        clientflags,
     );
 }
 
@@ -102,6 +108,22 @@ const mysql_fetch_field = function (mysqlRes: MySQLResultObject): MysqlFieldObje
     return lib.symbols.mysql_fetch_field(mysqlRes);
 }
 
+const mysql_stmt_init = function(mysql: MySQLObject) : MysqlStatementObject {
+    return lib.symbols.mysql_stmt_init(mysql);
+}
+
+const mysql_stmt_prepare = function(stmtObj: MysqlStatementObject, query: string) : number {
+    let qry = cString(query);
+    return lib.symbols.mysql_stmt_prepare(stmtObj, qry, qry.length);
+}
+
+const mysql_stmt_execute = function(stmtObj: MysqlStatementObject) : number {
+    return lib.symbols.mysql_stmt_execute(stmtObj);
+}
+const mysql_stmt_param_count = function(stmtObj: MysqlStatementObject) : number {
+    return lib.symbols.mysql_stmt_param_count(stmtObj);
+}
+
 
 export {
     mysql_error,
@@ -116,5 +138,9 @@ export {
     mysql_num_rows,
     mysql_fetch_row,
     mysql_num_fields,
-    mysql_fetch_field
+    mysql_fetch_field,
+    mysql_stmt_init,
+    mysql_stmt_prepare,
+    mysql_stmt_execute,
+    mysql_stmt_param_count,
 }

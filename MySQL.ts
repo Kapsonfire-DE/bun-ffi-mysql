@@ -11,15 +11,17 @@ import {
     mysql_num_rows,
     mysql_query,
     mysql_real_connect,
+    mysql_stmt_init, mysql_stmt_param_count,
+    mysql_stmt_prepare,
     mysql_store_result,
     MysqlFieldObject,
     MySQLObject,
-    MySQLResultObject
+    MySQLResultObject,
+    MysqlStatementObject
 } from "./mysqlFFI";
-import {FFIType,} from "bun:ffi";
-import {ptrToStruct} from "./ffi_helper";
+import {FFIType, ptr, toArrayBuffer,} from "bun:ffi";
+import {ptrToStruct, ptrToStructFunctionCreator} from "./ffi_helper";
 import {MySQLTypes, MysqlTypesDates, MysqlTypesNumeric} from "./MySQLTypes";
-
 
 type FieldInfo = {
     name: string,
@@ -83,37 +85,37 @@ export class MysqlResult {
 
     private _fields: FieldInfo[] = [];
 
+    private static getFieldsFromFFI =  ptrToStructFunctionCreator([
+        {name: 'name', type: FFIType.cstring},
+        {name: 'org_name', type: FFIType.cstring},
+        {name: 'table', type: FFIType.cstring},
+        {name: 'org_table', type: FFIType.cstring},
+        {name: 'db', type: FFIType.cstring},
+        {name: 'catalog', type: FFIType.cstring},
+        {name: 'def', type: FFIType.cstring},
+        {name: 'length', type: FFIType.u64},
+        {name: 'max_length', type: FFIType.u64},
+        {name: 'name_length', type: FFIType.u32},
+        {name: 'org_name_length', type: FFIType.u32},
+        {name: 'table_length', type: FFIType.u32},
+        {name: 'org_table_length', type: FFIType.u32},
+        {name: 'db_length', type: FFIType.u32},
+        {name: 'catalog_length', type: FFIType.u32},
+        {name: 'def_length', type: FFIType.u32},
+        {name: 'flags', type: FFIType.u32},
+        {name: 'decimals', type: FFIType.u32},
+        {name: 'charsetnr', type: FFIType.u32},
+        {name: 'type', type: FFIType.u32},
+    ]);
     get fields(): FieldInfo[] {
         if (this._fields.length > 0) {
             return this._fields;
         }
         for (let i = 0; i < this.fieldCount; i++) {
             let fieldObj: MysqlFieldObject = mysql_fetch_field(this.mysqlResult);
-            let obj = ptrToStruct(fieldObj, [
-                {name: 'name', type: FFIType.cstring},
-                {name: 'org_name', type: FFIType.cstring},
-                {name: 'table', type: FFIType.cstring},
-                {name: 'org_table', type: FFIType.cstring},
-                {name: 'db', type: FFIType.cstring},
-                {name: 'catalog', type: FFIType.cstring},
-                {name: 'def', type: FFIType.cstring},
-                {name: 'length', type: FFIType.u64},
-                {name: 'max_length', type: FFIType.u64},
-                {name: 'name_length', type: FFIType.u32},
-                {name: 'org_name_length', type: FFIType.u32},
-                {name: 'table_length', type: FFIType.u32},
-                {name: 'org_table_length', type: FFIType.u32},
-                {name: 'db_length', type: FFIType.u32},
-                {name: 'catalog_length', type: FFIType.u32},
-                {name: 'def_length', type: FFIType.u32},
-                {name: 'flags', type: FFIType.u32},
-                {name: 'decimals', type: FFIType.u32},
-                {name: 'charsetnr', type: FFIType.u32},
-                {name: 'type', type: FFIType.u32},
-            ]) as FieldInfo;
+            let obj = ptrToStructFunctionCreator(fieldObj) as FieldInfo
             this._fields.push(obj);
         }
-
         return this._fields;
     }
 
@@ -128,7 +130,61 @@ export class MysqlResult {
     }
 }
 
+export class MysqlStatement{
+    readonly mysqlStmtObj: MysqlStatementObject;
+    readonly mysql: MySQL;
+    constructor(mysqlStmt: MysqlStatementObject, mysql: MySQL, query: string) {
+        this.mysqlStmtObj = mysqlStmt;
+        this.mysql = mysql;
+        mysql_stmt_prepare(this.mysqlStmtObj, query);
+    }
+
+    get paramCount() : number {
+        //do we really need a safe check?
+        return Number(mysql_stmt_param_count(this.mysqlStmtObj));
+    }
+
+    execute(params: string[]|{[key: string]: string}) : boolean {
+        if(Array.isArray(params)) {
+            if(params.length !== this.paramCount) {
+                console.error('Params mismatch', params.length, this.paramCount);
+                throw new Error('Params mismatch');
+            }
+            stmt_bind
+        }
+    }
+}
+
+const MYSQL_BIND_SIZE =
+function toMysqlBind(value) {
+    if(typeof value !== 'string') {
+        value = value.toString();
+    }
+    let len = value.length;
+    let type = MySQLTypes.MYSQL_TYPE_STRING;
+    let buffer = new Uint8Array(112);
+    let dv = new DataView(buffer);
+
+    let lenDV = new DataView(new Uint8Array(8));
+    lenDV.setBigUint64(0, len);
+    dv.setBigUint64(0, BigInt(ptr(lenDV)), true);
+
+
+
+
+}
+
 export class MySQL {
+
+
+    prepare(query: string) : MysqlStatement {
+        let stmtObj = mysql_stmt_init(this.mysqlObj);
+        if(stmtObj === null) {
+            throw new Error('OOM');
+        }
+        return new MysqlStatement(stmtObj, this, query);
+    }
+
     get typeSafety(): boolean {
         return this._typeSafety;
     }

@@ -2,7 +2,6 @@ import {CString, FFIType, toArrayBuffer} from "bun:ffi";
 
 export function ffiTypeToByteLength(type) {
     switch (type) {
-
         case FFIType.u8:
         case FFIType.i8:
         case FFIType.char:
@@ -21,7 +20,60 @@ export function ffiTypeToByteLength(type) {
 }
 
 
+
+export function ptrToStructFunctionCreator(fields) : Function {
+    let funcBody = 'return {\n';
+    let ind = 0;
+
+    fields.forEach(field => {
+        let len = ffiTypeToByteLength(field.type);
+        if (field.type === FFIType.cstring) {
+            funcBody += `${field.name}: (new CString(buff.getFloat64(${ind}, true))),\n`
+        } else if (field.type === FFIType.ptr) {
+            funcBody += `${field.name}: buff.getFloat64(${ind}, true),\n`
+        } else if (field.type === FFIType.i8) {
+            funcBody += `${field.name}: buff.getInt8(${ind}, true),\n`
+        } else if (field.type === FFIType.u8) {
+            funcBody += `${field.name}: buff.getUint8(${ind}, true),\n`
+        } else if (field.type === FFIType.i16) {
+            funcBody += `${field.name}: buff.getInt16(${ind}, true),\n`
+        } else if (field.type === FFIType.u16) {
+            funcBody += `${field.name}: buff.getUint16(${ind}, true),\n`
+        } else if (field.type === FFIType.u64) {
+            funcBody += `${field.name}: buff.getBigUint64(${ind}, true),\n`
+        } else if (field.type === FFIType.i64) {
+            funcBody += `${field.name}: buff.getBigInt64(${ind}, true),\n`
+        } else if (field.type === FFIType.i32) {
+            funcBody += `${field.name}: buff.getInt32(${ind}, true),\n`
+        } else if (field.type === FFIType.u32) {
+            funcBody += `${field.name}: buff.getUint32(${ind}, true),\n`
+        } else if (field.type === FFIType.f64) {
+            funcBody += `${field.name}: buff.getFloat64(${ind}, true),\n`
+        } else if (field.type === FFIType.f32) {
+            funcBody += `${field.name}: buff.getFloat32(${ind}, true),\n`
+        } else if (field.type === FFIType.char) {
+            funcBody += `${field.name}: String.fromCharCode(buff.getUint8(${ind})),\n`
+        } else {
+            funcBody += `${field.name}: null`
+        }
+
+
+        ind += len;
+    })
+
+    funcBody += '};'
+
+    funcBody = `const buff = new DataView(toArrayBuffer(ptr, 0, ${ind}));\n\n`+funcBody;
+
+    let fun = new Function('ptr', 'toArrayBuffer', 'CString', funcBody);
+    return (ptr) => { return fun(ptr, toArrayBuffer, CString) };
+}
+
 export function ptrToStruct(ptr: number, fields: { name: string, type: FFIType }[]) {
+
+
+
+
     let obj = {};
     let totalLength = 0;
     fields.map(field => totalLength += ffiTypeToByteLength(field.type));
